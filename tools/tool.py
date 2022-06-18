@@ -9,31 +9,39 @@ FilePath: /flow-wise-prediction/tools/tool.py
 import torch
 from model import *
 from model.LSTNet import LSTNet
+from model.convlstm import EncoderDecoderConvLSTM
 from model.dcrnn import DCRNNModel
 from model.gru import GRU, GRU_TM
 from model.lstm import LSTM, LSTM_TM
 from model.mtgnn import gtnet
+# from tsai.all import * 
 from model.stgcn import STGCN
 from model.transformer import Transformer
 from model.transformer_tm import Transformer_TM
 from tsai.all import MLP,ResNet,TST,TCN
 
-
-# path to dataset.npy
 def get_data_path(dataset='geant'):
     fea_path = ''
     if dataset == 'geant':
-        fea_path = '/home/*/flow-wise-prediction/dataset/geant_fea.npy'
+        fea_path = '/home/liyiyong/flow-wise-prediction/dataset/geant_fea.npy'
     elif dataset == 'abilene':
-        fea_path = '/home/*/flow-wise-prediction/dataset/abilene_fea.npy'
+        fea_path = '/home/liyiyong/flow-wise-prediction/dataset/abilene_fea.npy'
     elif dataset == 'abilene05':
-        fea_path = '/home/*/flow-wise-prediction/dataset/abilene_fea_05.npy'
+        fea_path = '/home/liyiyong/flow-wise-prediction/dataset/abilene_fea_05.npy'
     elif dataset == 'nobel':
-        fea_path = '/home/*/flow-wise-prediction/dataset/nobel_germany.npy'
+        fea_path = '/home/liyiyong/flow-wise-prediction/dataset/nobel_germany.npy'
     elif dataset == 'germany':
-        fea_path = '/home/*/flow-wise-prediction/dataset/germany50.npy'
+        fea_path = '/home/liyiyong/flow-wise-prediction/dataset/germany50.npy'
     return fea_path
 
+
+def get_adj_matrix(dataset='abilene'):
+    adj_path = ''
+    if dataset == 'geant':
+        adj_path = '/home/liyiyong/flow-wise-prediction/dataset/geant_adj.npy'
+    elif dataset == 'abilene':
+        adj_path = '/home/liyiyong/flow-wise-prediction/dataset/abilene_adj.npy'
+    return adj_path
 
 def get_data_nodes(dataset='geant'):
     nodes = 0
@@ -87,6 +95,8 @@ def get_model(name='lstm', args=None):
         model = ResNet(args.seq_len,args.num_flows)
     if name =='tcn':
         model = TCN(args.seq_len,args.num_flows,fc_dropout=.5)
+    if name == 'convlstm_tm':
+        model = EncoderDecoderConvLSTM(args.dim_model,1)
     if name == 'LSTNet':
         model = LSTNet(flows=args.num_flows,seq_len=args.seq_len,pre_len=args.pre_len,hidCNN=args.dim_model,hidRNN=args.dim_model,hidSkip=10,CNN_kernel=6,skip=2)
     # if name == 'Rocket':
